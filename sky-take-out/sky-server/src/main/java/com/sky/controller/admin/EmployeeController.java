@@ -1,10 +1,13 @@
 package com.sky.controller.admin;
 
+import com.alibaba.druid.support.logging.Log;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
@@ -15,6 +18,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -92,6 +97,28 @@ public class EmployeeController {
 
         log.info("新增员工：{}", employeeDTO);
         employeeService.save(employeeDTO);
+        return Result.success();
+    }
+
+    /**
+     * 分页查询员工
+     */
+    @GetMapping("/page")
+    @ApiOperation(value = "分页查询员工")
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) {
+        log.info("分页查询员工：{}", employeePageQueryDTO);
+        PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
+        return Result.success(pageResult);
+    }
+
+    /**
+     * 启用或禁用员工账号
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation(value = "启用或禁用员工账号")
+    public Result startOrStop(@PathVariable("status") Integer status, Long id) {
+        log.info("启用或禁用员工账号：{},{}", status, id);
+        employeeService.startOrStop(status, id);
         return Result.success();
     }
 }
